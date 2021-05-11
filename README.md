@@ -426,3 +426,6 @@ sql-log = REALTIME # sql日志需开启（默认关闭）且模式是REALTIME（
 1. [https://docs.docker.com/compose/compose-file/](https://docs.docker.com/compose/compose-file/) # `docker-compose.yml`规范文档
 
 ### 如有错误敬请指正（issues）
+
+## 增加端口映射
+https://zhuanlan.zhihu.com/p/65938559
