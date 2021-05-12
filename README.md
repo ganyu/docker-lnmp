@@ -429,3 +429,7 @@ sql-log = REALTIME # sql日志需开启（默认关闭）且模式是REALTIME（
 
 ## 增加端口映射
 https://zhuanlan.zhihu.com/p/65938559
+
+### docker中安装vim
+apt-get update 
+apt-get install -y vim
