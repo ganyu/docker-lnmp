@@ -10,6 +10,7 @@ services:
     env_file: .env
     restart: always
     ports:
+      - "1111:80"
       - "${NGINX_PORT}:80"
       - "443:443" #如果有https则需打开443端口，上面的80端口也要打开（因为可能有需要把80跳转443的场景）
     volumes:
@@ -69,6 +70,21 @@ services:
       - lnmp-net
     environment:
       MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+
+  node:
+    build:
+      context: ./services/node
+    container_name: node
+    privileged: true
+    env_file: .env
+    ports:
+      - "8081:8081"
+    volumes:
+      - ${WEB_DIR}:${WEB_DIR}:rw
+    restart: always
+    tty: true
+    networks:
+      - lnmp-net
 
 networks:
   lnmp-net:
