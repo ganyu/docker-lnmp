@@ -40,15 +40,14 @@ RUN docker-php-ext-install \
         zip \
         bcmath \
 	&& docker-php-ext-configure gd \
-        --with-freetype-dir=/usr/include/ \
-        --with-jpeg-dir=/usr/include/ \
+        --with-freetype=/usr/include/ \
+        --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && rm -r /var/lib/apt/lists/*
 
-COPY ./extensions /tmp/extensions
-#WORKDIR /tmp/extensions #pecl 如果下载不了，可以这样用先下载，如果用了workdir下面就不用绝对路径了
-RUN pecl install /tmp/extensions/memcached-3.0.3.tgz && docker-php-ext-enable memcached \
-&& pecl install /tmp/extensions/mongodb-1.6.0.tgz && docker-php-ext-enable mongodb
+RUN pecl install redis && echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini && \
+pecl install mongodb && echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini && \
+pecl install memcached && echo "extension=memcached.so" > /usr/local/etc/php/conf.d/memcached.ini
 
 # Cron
 RUN apt-get update && apt-get install -y cron \
@@ -70,17 +69,19 @@ RUN \
 # Supervisor
 
 # php swoole扩展
-RUN cd /usr/src \
-    && pecl download swoole-${SWOOLE_VERSION} \
-    && tar -zxvf swoole-${SWOOLE_VERSION}.tgz \
-    && cd swoole-${SWOOLE_VERSION} \
-    && phpize \
-    && ./configure --with-php-config=/usr/local/bin/php-config --enable-openssl \
-    && make \
-    && make install \
-    && echo "extension=swoole.so" > /usr/local/etc/php/conf.d/swoole.ini \
-    && rm -rf swoole-${SWOOLE_VERSION}.tgz \
-    && rm -rf swoole-${SWOOLE_VERSION}
+#RUN cd /usr/src \
+#    && pecl download swoole-${SWOOLE_VERSION} \
+#    && tar -zxvf swoole-${SWOOLE_VERSION}.tgz \
+#    && cd swoole-${SWOOLE_VERSION} \
+#    && phpize \
+#    && ./configure --with-php-config=/usr/local/bin/php-config --enable-openssl \
+#    && make \
+#    && make install \
+#    && echo "extension=swoole.so" > /usr/local/etc/php/conf.d/swoole.ini \
+#    && rm -rf swoole-${SWOOLE_VERSION}.tgz \
+#    && rm -rf swoole-${SWOOLE_VERSION}
+
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # 安装composer并允许root用户运行
 ENV COMPOSER_ALLOW_SUPERUSER=1
