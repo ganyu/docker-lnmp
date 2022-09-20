@@ -28,7 +28,8 @@ RUN apt-get update && apt-get install -y \
         libpng-dev \
         libxml2-dev \
 		libssl-dev \
-		libmemcached-dev
+		libmemcached-dev \
+        libmagickwand-dev --no-install-recommends
 
 # 安装PHP核心拓展
 RUN docker-php-ext-install \
@@ -44,6 +45,13 @@ RUN docker-php-ext-install \
         --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && rm -r /var/lib/apt/lists/*
+
+#安装imagick
+# install imagick
+# Version is not officially released https://pecl.php.net/get/imagick but following works for PHP 8
+RUN mkdir -p /usr/src/php/ext/imagick; \
+    curl -fsSL https://github.com/Imagick/imagick/archive/06116aa24b76edaf6b1693198f79e6c295eda8a9.tar.gz | tar xvz -C "/usr/src/php/ext/imagick" --strip 1; \
+    docker-php-ext-install imagick;
 
 RUN pecl install redis && echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini && \
 pecl install mongodb && echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini && \
